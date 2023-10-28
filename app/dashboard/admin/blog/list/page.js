@@ -1,5 +1,5 @@
 import Link from "next/link";
-import BlogList from "@/components/blogs/BlogList";
+// import BlogList from "@/components/blogs/BlogList";
 
 async function getBlogs(searchParams) {
   // console.log("searchParams => ", searchParams);
@@ -25,7 +25,7 @@ async function getBlogs(searchParams) {
   return data; // {blogs, currentPage, totalPages}
 }
 
-export default async function Home({ searchParams }) {
+export default async function AdminBlogsList({ searchParams }) {
   const data = await getBlogs(searchParams);
   // console.log("data in home page => ", data);
   const { blogs, currentPage, totalPages } = data;
@@ -34,10 +34,22 @@ export default async function Home({ searchParams }) {
   const hasNextPage = currentPage < totalPages;
 
   return (
-    <div>
+    <div className="container">
       <p className="lead text-primary text-center">Latest Blogs</p>
 
-      <BlogList blogs={blogs} />
+      {blogs.map((blog) => (
+        <div key={blog._id} className="d-flex justify-content-between">
+          <p>{blog.title}</p>
+          <Link
+            className="text-danger"
+            href={`/dashboard/admin/blog/update/${blog.slug}`}
+          >
+            Update
+          </Link>
+        </div>
+      ))}
+
+      {/* <BlogList blogs={blogs} /> */}
       {/* <pre>{JSON.stringify(data, null, 4)}</pre> */}
 
       <div className="d-flex justify-content-center">
@@ -53,22 +65,6 @@ export default async function Home({ searchParams }) {
                 </Link>
               </li>
             )}
-
-            {Array.from({ length: totalPages }, (_, index) => {
-              const page = index + 1;
-              return (
-                <li
-                  key={page}
-                  className={`page-item ${
-                    currentPage === page ? "active" : ""
-                  }`}
-                >
-                  <Link className="page-link" href={`?page=${page}`}>
-                    {page}
-                  </Link>
-                </li>
-              );
-            })}
 
             {hasNextPage && (
               <li className="page-item">
